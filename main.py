@@ -8,12 +8,19 @@ print(f'''
 {"="*50}
 {"Enter your Master Password:":^50s}
       ''')
-mastterPass = input(">>>")
-test = masterPassword.MasterPassword()
 
-if test.checkMatch(mastterPass):
-    ui = UI.UIManager()
-    ui.printMenu()
-else:
-    print("Invalid Password")
-    sys.exit()
+
+ui = UI.UIManager()
+ui.printMenu()
+
+# mastterPass = input(">>>")
+# test = masterPassword.MasterPassword()
+
+
+# if test.checkMatch(mastterPass):
+#     ui = UI.UIManager()
+#     ui.printMenu()
+
+# else:
+#     print("Invalid Password")
+#     sys.exit()

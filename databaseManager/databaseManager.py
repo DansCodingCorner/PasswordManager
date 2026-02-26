@@ -1,9 +1,6 @@
 import sqlite3
 
-
 class  DatabaseManager:
-
-
 
 
     def connectToDb(self):
@@ -11,50 +8,83 @@ class  DatabaseManager:
 
        return connection
 
-    def createCursor(self, connection):
 
-        cursor = connection.cursor()
 
-        return cursor
-    
-    def closeConnection(self,  connection):
+    def setMasterPassword(self, salt, masterPasswordHash):
+        connection = self.connectToDb()
+        cursor =  connection.cursor()
 
+        cursor.execute(f'''INSERT INTO MasterPassword
+VALUES({salt},{masterPasswordHash})''')
+        
+        connection.commit()
         connection.close()
 
-    def setMasterPassword(self):
 
 
-        self.cursor.execute()
+    def addPasswordToDatabase(self, serviceName, username, passwordHash):
+        connection = self.connectToDb()
+        cursor =  connection.cursor()
 
-    def addPasswordToDatabase():
-        pass
+        cursor.execute(f'''INSERT INTO MasterPassword
+VALUES({serviceName},{username},{passwordHash})''')
+        
+        connection.commit()
+        connection.close()
+
 
     def removePasswordFromDatabase():
         pass
 
+
     def changePassword():
        pass
+
 
     def defRetrievePassword():
         pass
 
-    def createTable(self):
-        connection = self.connectToDb()
-        cursor = self.createCursor(connection)
 
-        create_table_query = '''
+    def createTable(self):
+
+        connection = self.connectToDb()
+        cursor = connection.cursor()
+
+        create_masterPassword_table_query = '''
 CREATE TABLE IF NOT EXISTS MasterPassword (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     salt TEXT NOT NULL,
     masterPasswordHash  TEXT NOT NULL
 );
 '''
-        cursor.execute(create_table_query)
+
+        cursor.execute(create_masterPassword_table_query)
+
+        create_Password_table_query = '''
+CREATE TABLE IF NOT EXISTS Password (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    serviceName TEXT NOT NULL,
+    username TEXT NOT NULL,
+    passwordHash  TEXT NOT NULL
+);
+'''
+        cursor.execute(create_Password_table_query)
+
         connection.commit()
 
         connection.close()
 
-        
+    def dropTale(self, tableName):
+
+        connection = self.connectToDb()
+        cursor = connection.cursor()
+
+        dropTablequery = tableName
+
+        cursor.execute(dropTablequery)
+
+        connection.commit()
+        connection.close()
 
     def showTables():
         pass

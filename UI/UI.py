@@ -1,11 +1,14 @@
-from scripts import masterPassword
+from scripts import appDriver
+import sys
 
 class UIManager:
 
-    masterPasswordObject = None
+    _appDriver = None
 
     def __init__(self):
-        self.masterPasswordObject = masterPassword.MasterPassword()
+        self._appDriver = appDriver.AppDriver()
+        print(self._appDriver)
+
 
     def printMenu(self):
         print(f'''Select an option:
@@ -13,7 +16,33 @@ class UIManager:
               2: Add a password
               3: Chage a Password
               4: Remove a password
-              5: Change Master Passwordd
+              5: Change Master Password
               6: Show Service List
-              '''
-        )
+              7: exit
+              ''')
+
+        selection  = input(">>>")
+
+        match selection:
+            case "1":
+                self._appDriver.retrievePassword()
+            case"2":
+                self._appDriver.addPassword()
+            case"3":
+                self._appDriver.changePassword()
+
+            case "4":
+                self._appDriver.removePassword()
+
+            case "5":
+                self._appDriver.changeMasterPassword()
+
+            case "6":
+                self._appDriver.showServiceList()
+            case "7":
+                print("Exiting system")
+                sys.exit()
+            case _:
+                print("Invalid option, please enter a vliad selection.")
+
+
