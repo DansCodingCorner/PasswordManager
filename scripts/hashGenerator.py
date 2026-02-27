@@ -13,6 +13,9 @@ class HashGenerator:
     functions for encrypting passwords and generating encryption keys.
     '''
 
+    def __init__(self):
+        print("called constructor for HG")
+
 
     def generateHash(self, message : str | bytes, key):
         '''
@@ -39,7 +42,7 @@ class HashGenerator:
         return decryptedMessage
 
 
-    def generateKey(self, eneredPassword, salt = 0):
+    def generateKey(self, eneredPassword):
         '''
         This is used to generate the encrryption key
         from the User's master password, the first time it is run,
@@ -48,8 +51,7 @@ class HashGenerator:
 
         passwordBytes = eneredPassword.encode("utf-8")
 
-        if salt == 0:
-            salt = self.generateSalt()
+        salt = self.generateSalt()
 
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
@@ -70,24 +72,6 @@ class HashGenerator:
         return salt
 
 
-
-hg = HashGenerator()
-
-Masterpassword = "Apple"
-
-keySalt  = hg.generateKey(Masterpassword)
-key = keySalt[0]
-salt = keySalt[1]
-
-newPassword = 'Akmeer123@'
-
-
-encrypedPasswordHash = hg.generateHash(newPassword, key)
-print(encrypedPasswordHash)
-
-
-decryptedPassword = hg.decryptHash(encrypedPasswordHash, key)
-print(decryptedPassword)
 
 
 

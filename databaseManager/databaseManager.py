@@ -11,12 +11,21 @@ class  DatabaseManager:
 
 
     def setMasterPassword(self, salt, masterPasswordHash):
+
+        salt = str(salt)
+        masterPasswordHash = str(masterPasswordHash)
+
         connection = self.connectToDb()
         cursor =  connection.cursor()
+        clearTableQuery = '''DELETE FROM  MasterPassword;'''
 
-        cursor.execute(f'''INSERT INTO MasterPassword
-VALUES({salt},{masterPasswordHash})''')
-        
+        cursor.execute(clearTableQuery)
+
+        cursor.execute(
+        "INSERT INTO MasterPassword (salt, masterPasswordHash) VALUES (?, ?)",
+        (salt, masterPasswordHash)
+    )
+
         connection.commit()
         connection.close()
 
@@ -92,4 +101,4 @@ CREATE TABLE IF NOT EXISTS Password (
     
     
 db = DatabaseManager()
-db.createTable()
+db.setMasterPassword( "SALT", "HASH")

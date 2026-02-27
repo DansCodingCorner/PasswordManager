@@ -1,4 +1,3 @@
-from scripts import masterPassword
 from UI import UI
 import sys
 
