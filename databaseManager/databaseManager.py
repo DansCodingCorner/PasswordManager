@@ -1,4 +1,5 @@
 import sqlite3
+import base64
 
 class  DatabaseManager:
 
@@ -12,8 +13,7 @@ class  DatabaseManager:
 
     def setMasterPassword(self, salt, masterPasswordHash):
 
-        salt = str(salt)
-        masterPasswordHash = str(masterPasswordHash)
+        # salt_b64 = base64.urlsafe_b64encode(salt).decode('ascii')   # safe string        masterPasswordHash = str(masterPasswordHash)
 
         connection = self.connectToDb()
         cursor =  connection.cursor()
@@ -22,13 +22,41 @@ class  DatabaseManager:
         cursor.execute(clearTableQuery)
 
         cursor.execute(
-        "INSERT INTO MasterPassword (salt, masterPasswordHash) VALUES (?, ?)",
-        (salt, masterPasswordHash)
-    )
+    "INSERT INTO MasterPassword (salt, masterPasswordHash) VALUES (?, ?)",
+    (salt, masterPasswordHash)   # both as strings
+)
+
+        selecttHashQuery = '''SELECT * FROM MasterPassword'''
+
+        cursor.execute(selecttHashQuery)
+        hash = cursor.fetchall()
+        print(hash)
 
         connection.commit()
         connection.close()
 
+    def retieveMasterPasswordSalt(self):   # fix typo too: retrieve
+        conn = self.connectToDb()
+        cursor = conn.cursor()
+        cursor.execute("SELECT salt FROM MasterPassword LIMIT 1")
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return row[0]          # this is already a str (base64)
+        return None
+
+    def retrieveMasterPasswordHash(self):
+
+        connection = self.connectToDb()
+        cursor =  connection.cursor()
+
+        selecttHashQuery = '''SELECT masterPasswordHash FROM MasterPassword'''
+
+        cursor.execute(selecttHashQuery)
+        hash = cursor.fetchone()
+        hash = hash[0]
+
+        return hash
 
 
     def addPasswordToDatabase(self, serviceName, username, passwordHash):
@@ -98,7 +126,6 @@ CREATE TABLE IF NOT EXISTS Password (
     def showTables():
         pass
 
-    
-    
-db = DatabaseManager()
-db.setMasterPassword( "SALT", "HASH")
+databaseManagerInstance = DatabaseManager()
+print(databaseManagerInstance)
+

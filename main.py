@@ -1,5 +1,15 @@
 from UI import UI
+from scripts import masterPassword
+from scripts import hashGenerator
+from databaseManager import databaseManager
+from scripts import appDriver
 import sys
+
+db = databaseManager.databaseManagerInstance
+hg = hashGenerator.hashGeneratorInstance
+ad = appDriver.appDriverInnstance
+mp = masterPassword.masterPasswordInstance
+ui = UI.uiInstance
 
 print(f'''
 {"="*50}
@@ -8,18 +18,7 @@ print(f'''
 {"Enter your Master Password:":^50s}
       ''')
 
+masterPasswordEntry = input(">>>")
+if mp.checkMatch(masterPasswordEntry):
+    ui.printMenu()
 
-ui = UI.UIManager()
-ui.printMenu()
-
-# mastterPass = input(">>>")
-# test = masterPassword.MasterPassword()
-
-
-# if test.checkMatch(mastterPass):
-#     ui = UI.UIManager()
-#     ui.printMenu()
-
-# else:
-#     print("Invalid Password")
-#     sys.exit()

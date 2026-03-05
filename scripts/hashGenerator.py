@@ -12,10 +12,7 @@ class HashGenerator:
     This class provides the neccessary methods to perform various 
     functions for encrypting passwords and generating encryption keys.
     '''
-
-    def __init__(self):
-        print("called constructor for HG")
-
+        
 
     def generateHash(self, message : str | bytes, key):
         '''
@@ -42,27 +39,39 @@ class HashGenerator:
         return decryptedMessage
 
 
-    def generateKey(self, eneredPassword):
-        '''
-        This is used to generate the encrryption key
-        from the User's master password, the first time it is run,
-        The salt will be generated and can be stored later.
-        '''
+    def generateKey(self, enteredPassword, salt=None):
 
-        passwordBytes = eneredPassword.encode("utf-8")
+        passwordBytes = enteredPassword.encode("utf-8")
 
-        salt = self.generateSalt()
+        if salt is None:
+            print("No salt provided, generating new salt")
+            salt = self.generateSalt()          # returns bytes
+            # salt = base64.urlsafe_b64encode(salt).decode('ascii')
 
+        # else:
+        #     # salt came from DB → it's already base64 string
+        #     print("Salt from DB (base64 string):", salt)
+        #     salt = base64.urlsafe_b64decode(salt)   
+            
+        print("Salt  being used to generate the key in hashgen: ")
+        print(salt)
+
+        
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=salt,
+            salt=salt,               # must be bytes
             iterations=1_200_000,
         )
 
         key = base64.urlsafe_b64encode(kdf.derive(passwordBytes))
-
-        return key, salt
+        
+        # If this was first-time generation, you still need to return the new salt (base64 string)
+        if salt is None:
+            return key, salt_b64
+        else:
+            return key, salt
+    
     
 
     def generateSalt(self):
@@ -72,8 +81,7 @@ class HashGenerator:
         return salt
 
 
-
-
+hashGeneratorInstance = HashGenerator()
 
 
 

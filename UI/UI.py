@@ -7,8 +7,6 @@ class UIManager:
 
     def __init__(self):
         self._appDriver = appDriver.AppDriver()
-        print(self._appDriver)
-
 
     def printMenu(self):
         print(f'''Select an option:
@@ -45,4 +43,4 @@ class UIManager:
             case _:
                 print("Invalid option, please enter a vliad selection.")
 
-
+uiInstance = UIManager()
