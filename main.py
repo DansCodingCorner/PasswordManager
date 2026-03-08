@@ -18,7 +18,9 @@ print(f'''
 {"Enter your Master Password:":^50s}
       ''')
 
-masterPasswordEntry = input(">>>")
-if mp.checkMatch(masterPasswordEntry):
-    ui.printMenu()
+# masterPasswordEntry = input(">>>")
 
+# if mp.checkMatch(masterPasswordEntry):
+#     ui.printMenu()
+
+ad.retrievePassword()

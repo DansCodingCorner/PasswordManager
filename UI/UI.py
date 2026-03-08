@@ -6,7 +6,7 @@ class UIManager:
     _appDriver = None
 
     def __init__(self):
-        self._appDriver = appDriver.AppDriver()
+        self._appDriver = appDriver.appDriverInnstance
 
     def printMenu(self):
         print(f'''Select an option:

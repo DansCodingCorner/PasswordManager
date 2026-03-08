@@ -10,10 +10,7 @@ class  DatabaseManager:
        return connection
 
 
-
     def setMasterPassword(self, salt, masterPasswordHash):
-
-        # salt_b64 = base64.urlsafe_b64encode(salt).decode('ascii')   # safe string        masterPasswordHash = str(masterPasswordHash)
 
         connection = self.connectToDb()
         cursor =  connection.cursor()
@@ -23,7 +20,7 @@ class  DatabaseManager:
 
         cursor.execute(
     "INSERT INTO MasterPassword (salt, masterPasswordHash) VALUES (?, ?)",
-    (salt, masterPasswordHash)   # both as strings
+    (salt, masterPasswordHash)   
 )
 
         selecttHashQuery = '''SELECT * FROM MasterPassword'''
@@ -35,15 +32,16 @@ class  DatabaseManager:
         connection.commit()
         connection.close()
 
-    def retieveMasterPasswordSalt(self):   # fix typo too: retrieve
+
+
+    def retieveMasterPasswordSalt(self):
         conn = self.connectToDb()
         cursor = conn.cursor()
         cursor.execute("SELECT salt FROM MasterPassword LIMIT 1")
         row = cursor.fetchone()
         conn.close()
         if row:
-            return row[0]          # this is already a str (base64)
-        return None
+            return row[0]        
 
     def retrieveMasterPasswordHash(self):
 
@@ -55,7 +53,7 @@ class  DatabaseManager:
         cursor.execute(selecttHashQuery)
         hash = cursor.fetchone()
         hash = hash[0]
-
+        
         return hash
 
 
@@ -63,23 +61,42 @@ class  DatabaseManager:
         connection = self.connectToDb()
         cursor =  connection.cursor()
 
-        cursor.execute(f'''INSERT INTO MasterPassword
-VALUES({serviceName},{username},{passwordHash})''')
+        cursor.execute("INSERT INTO Password (serviceName, username, passwordHash) VALUES (?, ?, ?)",
+    (serviceName, username, passwordHash))
         
         connection.commit()
         connection.close()
 
+    def retrievePasswoordHashFromDB(self, serviceName):
+        connection = self.connectToDb()
+        cursor = connection.cursor()
 
-    def removePasswordFromDatabase():
-        pass
+        cursor.execute(
+    "SELECT passwordHash FROM Password WHERE serviceName = ?",
+    (serviceName,)
+    )       
+        passwordHash = cursor.fetchone()
+        passwordHash = passwordHash[0]
+
+        return passwordHash
 
 
-    def changePassword():
-       pass
+    def removePasswordFromDatabase(self, serviceName):
+        connection = self.connectToDb()
+        cursor =  connection.cursor()
 
+        cursor.execute("DELETE FROM Password WHERE serviceName = ?",(serviceName,))
 
-    def defRetrievePassword():
-        pass
+    def changePassword(self, serviceName, passwordHash):
+       connection = self.connectToDb()
+       cursor = connection.cursor()
+       
+       cursor.execute(
+    "UPDATE Password SET passwordHash = ? WHERE serviceName = ?",
+    (passwordHash, serviceName)
+)
+       connection.commit()
+       connection.close()
 
 
     def createTable(self):
@@ -116,16 +133,11 @@ CREATE TABLE IF NOT EXISTS Password (
         connection = self.connectToDb()
         cursor = connection.cursor()
 
-        dropTablequery = tableName
-
-        cursor.execute(dropTablequery)
+        cursor.execute("DROP TABLE ?",(tableName,))
 
         connection.commit()
         connection.close()
 
-    def showTables():
-        pass
 
 databaseManagerInstance = DatabaseManager()
-print(databaseManagerInstance)
 

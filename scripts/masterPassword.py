@@ -21,10 +21,7 @@ class MasterPassword:
     def checkMatch(self, enterrePassword):
 
         enteredPasswordHash = self._hashGen.generateKey(enterrePassword, self._salt)
-        print('The key returned to the check matchmethod is: ')
-        print(enteredPasswordHash[0])
-        print('The key in the master password object is: ')
-        print(self._masterPasswordHashh)
+
         enteredPasswordHash = enteredPasswordHash[0]
 
         if enteredPasswordHash == self._masterPasswordHashh:

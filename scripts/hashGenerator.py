@@ -21,7 +21,7 @@ class HashGenerator:
         '''
         if type(message) == str:
             message = message.encode("UTF-8")
-
+        
         f = Fernet(key)
 
         eencryptedMessage = f.encrypt(message)
@@ -46,21 +46,12 @@ class HashGenerator:
         if salt is None:
             print("No salt provided, generating new salt")
             salt = self.generateSalt()          # returns bytes
-            # salt = base64.urlsafe_b64encode(salt).decode('ascii')
 
-        # else:
-        #     # salt came from DB → it's already base64 string
-        #     print("Salt from DB (base64 string):", salt)
-        #     salt = base64.urlsafe_b64decode(salt)   
-            
-        print("Salt  being used to generate the key in hashgen: ")
-        print(salt)
 
-        
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=salt,               # must be bytes
+            salt=salt,
             iterations=1_200_000,
         )
 
@@ -68,11 +59,11 @@ class HashGenerator:
         
         # If this was first-time generation, you still need to return the new salt (base64 string)
         if salt is None:
-            return key, salt_b64
+            return key, salt
         else:
             return key, salt
     
-    
+
 
     def generateSalt(self):
 
