@@ -17,8 +17,10 @@ class MasterPassword:
 
       
 
-
     def checkMatch(self, enterrePassword):
+        '''
+        Checks if the entered master password is correct by hashing it with the stored salt and comparing it to the stored master password hash.
+        '''
 
         enteredPasswordHash = self._hashGen.generateKey(enterrePassword, self._salt)
 
@@ -32,18 +34,30 @@ class MasterPassword:
     
 
     def getMasterPassHash(self):
+        '''
+        Returns the stored master password hash.
+        '''
 
         return self._masterPasswordHashh
     
     def getSalt(self):
+        '''
+        Returns the stored salt.
+        '''
 
         return self._salt
     
     def setSalt(self, salt):
+        '''
+        Sets the salt for the master password. This is used when changing the master password.
+        '''
 
         self._salt = salt
     
     def setMasterPassHash(self, masterPasswordHash):
+        '''
+        Sets the master password hash. This is used when changing the master password.
+        '''
 
         self._masterPasswordHashh = masterPasswordHash
 

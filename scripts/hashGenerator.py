@@ -19,6 +19,7 @@ class HashGenerator:
         This method is used for when adding new passwords that 
         need to be encrypted
         '''
+
         if type(message) == str:
             message = message.encode("UTF-8")
         
@@ -30,6 +31,9 @@ class HashGenerator:
 
 
     def decryptHash(self, eencryptedMessage : bytes, key):
+        '''
+        This method is used for when retrieving passwords that are stored in the database. It takes the encrypted password and decrypts it using the master password hash as the key.
+        '''
 
         f = Fernet(key)
 
@@ -40,7 +44,10 @@ class HashGenerator:
 
 
     def generateKey(self, enteredPassword, salt=None):
-
+        '''
+        This method is used to generate the master password hash and salt. If no salt is provided, it generates a new salt. It returns the generated key and salt (if a new one was generated).
+        '''
+ 
         passwordBytes = enteredPassword.encode("utf-8")
 
         if salt is None:
@@ -57,7 +64,6 @@ class HashGenerator:
 
         key = base64.urlsafe_b64encode(kdf.derive(passwordBytes))
         
-        # If this was first-time generation, you still need to return the new salt (base64 string)
         if salt is None:
             return key, salt
         else:
@@ -66,6 +72,9 @@ class HashGenerator:
 
 
     def generateSalt(self):
+        '''
+        This method generates a random salt using os.urandom and returns it.
+        '''
 
         salt = os.urandom(16)
 

@@ -1,8 +1,13 @@
+from multiprocessing.dummy import connection
 import sqlite3
 import base64
 
 class  DatabaseManager:
 
+    _appDriver = None
+
+    def __init__(self):
+        pass
 
     def connectToDb(self):
        connection = sqlite3.connect('data/test.db')
@@ -37,11 +42,16 @@ class  DatabaseManager:
     def retieveMasterPasswordSalt(self):
         conn = self.connectToDb()
         cursor = conn.cursor()
-        cursor.execute("SELECT salt FROM MasterPassword LIMIT 1")
-        row = cursor.fetchone()
-        conn.close()
-        if row:
-            return row[0]        
+        try:
+            cursor.execute("SELECT salt FROM MasterPassword LIMIT 1")
+            row = cursor.fetchone()
+            conn.close()
+            if row:
+                return row[0]
+            
+        except sqlite3.Error as e:
+            print(f"An error occurred while retrieving the salt: {e}")
+            return None        
 
     def retrieveMasterPasswordHash(self):
 
@@ -49,13 +59,17 @@ class  DatabaseManager:
         cursor =  connection.cursor()
 
         selecttHashQuery = '''SELECT masterPasswordHash FROM MasterPassword'''
+        try:
+            cursor.execute(selecttHashQuery)
+            hash = cursor.fetchone()
+            hash = hash[0]
+            connection.close()
+            return hash
+        except sqlite3.Error as e:
+            print(f"An error occurred while retrieving the password hash: {e}")
+            return None
 
-        cursor.execute(selecttHashQuery)
-        hash = cursor.fetchone()
-        hash = hash[0]
         
-        return hash
-
 
     def addPasswordToDatabase(self, serviceName, username, passwordHash):
         connection = self.connectToDb()
@@ -128,12 +142,55 @@ CREATE TABLE IF NOT EXISTS Password (
 
         connection.close()
 
-    def dropTale(self, tableName):
+
+
+    def dropTables(self):
 
         connection = self.connectToDb()
         cursor = connection.cursor()
 
-        cursor.execute("DROP TABLE ?",(tableName,))
+        cursor.execute("DROP TABLE MasterPassword")
+        cursor.execute("DROP TABLE Password")
+        cursor.execute("DROP TABLE Config")
+
+
+        connection.commit()
+        connection.close()
+
+
+
+    def getServiceList(self):
+        connection = self.connectToDb()
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT serviceName, username FROM Password")
+        serviceList = cursor.fetchall()
+
+        return serviceList
+    
+
+
+    def isConfigured(self):
+        connection = self.connectToDb()
+        cursor = connection.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS Config (isConfigured BOOLEAN DEFAULT FALSE);")
+
+        cursor.execute("SELECT isConfigured FROM Config LIMIT 1")
+        row = cursor.fetchone()
+        connection.close()
+        if row is not None and row[0] == 1:
+            return True
+        else:
+            return False
+        
+    def configure(self):
+        self.createTable()
+
+    def setConfigToTrue(self):
+        connection = self.connectToDb()
+        cursor = connection.cursor()
+
+        cursor.execute("INSERT INTO Config (isConfigured) VALUES (1)")
 
         connection.commit()
         connection.close()
