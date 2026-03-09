@@ -11,14 +11,16 @@ ui = UI.uiInstance
 ad = appDriver.appDriverInnstance
 mp = masterPassword.masterPasswordInstance
 
+print(db.retrieveMasterPasswordHash())
 
 if not db.isConfigured():
     print("It seems like this is your first time using the password manager, let's get you set up!")
-    db.configure()
+    db.createTable()
+    db.setConfigToTrue()
 
     ad.changeMasterPassword()
 
-    db.setConfigToTrue()
+
     print("The password Manager has now been configured, please restart to start storiing passwords!")
     sys.exit()
 
@@ -49,6 +51,7 @@ else:
 {"="*50}''')
 
       if mp.checkMatch(input()):
+          print("Master Password correct, loading your passwords...")
           ui.printMenu()
       else:
           print("Incorrect Master Password, exiting...")

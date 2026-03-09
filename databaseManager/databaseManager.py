@@ -160,6 +160,7 @@ CREATE TABLE IF NOT EXISTS Password (
 
 
     def getServiceList(self):
+
         connection = self.connectToDb()
         cursor = connection.cursor()
 
@@ -169,29 +170,40 @@ CREATE TABLE IF NOT EXISTS Password (
         return serviceList
     
 
-
     def isConfigured(self):
         connection = self.connectToDb()
         cursor = connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS Config (isConfigured BOOLEAN DEFAULT FALSE);")
-
-        cursor.execute("SELECT isConfigured FROM Config LIMIT 1")
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS Config (
+                key TEXT PRIMARY KEY,
+                isConfigured BOOLEAN DEFAULT 0
+            )
+        """)
+        
+        cursor.execute("SELECT isConfigured FROM Config WHERE key = 'setup' LIMIT 1")
         row = cursor.fetchone()
-        connection.close()
-        if row is not None and row[0] == 1:
-            return True
-        else:
+        
+        if row is None:
+            cursor.execute("INSERT INTO Config (key, isConfigured) VALUES ('setup', 0)")
+            connection.commit()
+            connection.close()
             return False
         
-    def configure(self):
-        self.createTable()
+        connection.close()
+        return bool(row[0])   
+        
+
 
     def setConfigToTrue(self):
         connection = self.connectToDb()
         cursor = connection.cursor()
-
-        cursor.execute("INSERT INTO Config (isConfigured) VALUES (1)")
-
+        
+        cursor.execute("""
+            INSERT OR REPLACE INTO Config (key, isConfigured)
+            VALUES ('setup', 1)
+        """)
+        
         connection.commit()
         connection.close()
 

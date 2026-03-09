@@ -1,3 +1,5 @@
+from traceback import TracebackException
+
 from . import hashGenerator
 from databaseManager import databaseManager 
 from . import masterPassword
@@ -19,7 +21,7 @@ class AppDriver:
         '''
         Retrieves the password for a given service, decrypts it and copies it to the clipboard.
         '''
-        serviceName = input("Enter the name of the service: ")
+        serviceName = input("Enter the name of the service: ").capitalize()
         try:
             hashedPassword = self._databaseManager.retrievePasswoordHashFromDB(serviceName)
             decryptedPassword = self._hashGen.decryptHash(hashedPassword , self._masterPassword.getMasterPassHash())
@@ -27,7 +29,7 @@ class AppDriver:
             pyperclip.copy(decryptedPassword)
             print(f"Password for {serviceName} has been copied to clipboard!")
 
-        except ValueError:
+        except TypeError:
             print(f"Service {serviceName} not found.")
             return
 
@@ -36,7 +38,7 @@ class AppDriver:
         Adds a new password to the database. The password is encrypted before being stored.
         '''
 
-        serviceName = input('Enter the name of the service (Ex:Gmail): ')
+        serviceName = input('Enter the name of the service (Ex:Gmail): ').capitalize()
         username = input('Enter the username for the service: ')
         rawPassword = input('Enter the password of the service: ')
 
@@ -54,7 +56,7 @@ class AppDriver:
         print("Services available: ")
         self.showServiceList()
 
-        serviceName = input('Enter the name of the service you want to change the password for: ')
+        serviceName = input('Enter the name of the service you want to change the password for: ').capitalize()
         rawPassword = input('Enter the new password of the service: ')
         encrypedPassword = self._hashGen.generateHash(rawPassword, self._masterPassword.getMasterPassHash())
 
@@ -104,10 +106,14 @@ class AppDriver:
         '''
         serviceList = self._databaseManager.getServiceList()
 
-        print(f'''{"Service Name":<20}{"Username":<20}
+        if len(serviceList) > 0:
+            print(f'''{"Service Name":<20}{"Username":<20}
 {"-"*50}''')
         for service in serviceList:
             print(f"{service[0]:<20}{service[1]:<20}")
+
+        else:
+            print("No services found in the database, start adding passwords to view the service list!")
 
     def exitApp(self):
         '''
@@ -121,7 +127,7 @@ class AppDriver:
         '''Resets the application by clearing all stored passwords and master password from the database.
         '''
         selection = input("Are you sure you want to reset the system? This action cannot be undone! (y/n): ")
-        if selection.lower() != "y":
+        if selection.lower() == "y":
             print("Resetting system, the applicaation will close now.")    
             self._databaseManager.dropTables()
 
